@@ -1,0 +1,38 @@
+<div class="d-flex justify-content-center">
+    <section class="col-6">
+        {% if todos %}
+    
+        <form class="sortable list-group col-8 mt-3" hx-trigger="end" hx-post="{% url 'sort_todos' %}" hx-target="#todo-list">
+            <div class="htmx-indicator">Loading....</div>
+            {% for todo in todos  %}
+                <div>
+                    <input type="hidden" name="todos-order" value="{{todo.pk}}">
+                    <li class="mb-2 list-group-item d-flex justify-content-between align-items-center">
+                        #{{todo.order}} {{todo.todo.todo_body}}<span hx-delete="{% url 'delete-todo' todo.pk %}" hx-target="#todo-list" hx-confirm="Are you sure you wish to delete?" class="btn btn-small btn-danger">
+                            X</span>
+                    </li>
+                </div>
+            {% endfor %}
+        </form>
+    
+        {% else %}
+        <p class="mt-3">Add a todo to get started</p>
+        {% endif %}
+    </section>
+    
+    <section class="col-6">
+    
+        {% include 'todos/partials/search.html' %}
+    </section>
+</div>
+
+{% block extra_body_js %}
+
+<script>
+
+    document.body.addEventListener('htmx:configRequest', function(evt) {
+        evt.detail.headers['X-CSRFToken'] = '{{csrf_token}}'; // add a new header into the request
+    });
+
+</script>
+{% endblock extra_body_js %}

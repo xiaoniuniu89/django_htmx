@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container col-8 mt-5">
+    <form hx-post="{% url 'add-todo' %}" hx-target="#todo-list">
+        {% csrf_token %}
+        <input type="text" name="todo" class="form-control-sm mr-2" placeholder="enter todo">
+        <button  type="submit" class="btn btn-primary btn-sm">Add todo</button>
+    </form>
+    
+    <div id="todo-list">
+        {% include 'todos/partials/todolist.html' %}
+    </div>
+</div>
+{% endblock content %}

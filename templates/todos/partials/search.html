@@ -1,0 +1,17 @@
+<div class="d-flex justify-content-end mb-4">
+<form>
+    
+        {% csrf_token %}
+        <input
+         class="form-control mr-sm-2" type="text" placeholder="Search todos..." aria-label="Search"
+         hx-post='{% url "search_todos" %}'
+         hx-target="#results"
+         hx-trigger="keyup changed delay:500ms"
+         name="search"
+         >
+</form>
+</div>
+
+<div id="results">
+
+</div>
