@@ -9,7 +9,7 @@ from .utils import get_max_order, reorder
 @login_required
 def todos(request):
     user = request.user
-    todos = UserTodos.objects.filter(user=user)
+    todos = UserTodos.objects.prefetch_related('todo').filter(user=user)
     return render(request, 'todos/todos.html', {'todos': todos})
 
 
@@ -49,13 +49,21 @@ def search_todos(request):
 @login_required
 def sort_todos(request):
     todo_pks_order = request.POST.getlist('todos-order')
+    print(todo_pks_order)
     todos = []
+    updated_todos = []
+    
+    user_todos = UserTodos.objects.prefetch_related('todo').filter(user=request.user)
+    
     for index, todo_pk in enumerate(todo_pks_order, start=1):
-        user_todo = UserTodos.objects.get(pk=todo_pk)
-        user_todo.order = index
-        user_todo.save()
+        user_todo = next(u for u in user_todos if u.pk == int(todo_pk))
+        
+        if user_todo.order != index:
+            user_todo.order = index
+            updated_todos.append(user_todo)
+        
+        
         todos.append(user_todo)
+        
+    UserTodos.objects.bulk_update(updated_todos, ['order'])
     return render(request, 'todos/partials/todolist.html', {'todos': todos})
-    
-    
-    
